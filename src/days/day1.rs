@@ -1,4 +1,4 @@
-use crate::days::common::{Exercise, Ops};
+use super::common::{Exercise, Ops};
 use std::fs::read_to_string;
 use std::path::PathBuf;
 
@@ -64,11 +64,8 @@ impl Exercise<Lines> for Day1 {
 
         let mut total = 0;
 
-        for i in 0..lines.a.len() {
-            let a = lines.a[i];
-            let count_in_list_b = lines.b.iter().filter(|&b| *b == a).count() as i32;
-
-            total += a * count_in_list_b;
+        for a in lines.a {
+            total += a * lines.b.iter().filter(|&b| *b == a).count() as i32;
         }
 
         println!("Question 2 : {}", total);

@@ -1,6 +1,6 @@
 mod days;
 
-use days::{common::Exercise, day1::Day1};
+use crate::days::{common::Exercise, day1::Day1};
 use std::env;
 
 /// Programme principal
