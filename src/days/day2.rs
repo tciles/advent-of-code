@@ -34,10 +34,7 @@ impl Exercise<Vec<Vec<i32>>> for Day2 {
         let mut total = 0;
 
         for i in 0..lines.len() {
-            let line = &lines[i];
-            let invalid = self.is_invalid(line);
-
-            if invalid {
+            if self.is_invalid(&lines[i]) {
                 continue;
             }
 
@@ -55,25 +52,23 @@ impl Exercise<Vec<Vec<i32>>> for Day2 {
 
         for i in 0..lines.len() {
             let line = &lines[i];
-            let mut invalid = self.is_invalid(line);
 
-            if invalid {
-                for i in 0..line.len() {
-                    let mut new_line = line.clone();
-                    new_line.remove(i);
-
-                    if !self.is_invalid(&new_line) {
-                        invalid = false;
-                        break;
-                    }
-                }
-            }
-
-            if invalid {
+            // OK next line
+            if !self.is_invalid(line) {
+                total += 1;
                 continue;
             }
 
-            total += 1;
+            for i in 0..line.len() {
+                let mut line_copy = Vec::with_capacity(line.len() - 1);
+                line_copy.extend_from_slice(&line[..i]);
+                line_copy.extend_from_slice(&line[i + 1..]);
+
+                if !self.is_invalid(&line_copy) {
+                    total += 1;
+                    break;
+                }
+            }
         }
 
         println!("Question 2 : {:?}", total);
