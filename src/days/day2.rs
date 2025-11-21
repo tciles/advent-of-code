@@ -59,10 +59,10 @@ impl Exercise<Vec<Vec<i32>>> for Day2 {
                 continue;
             }
 
-            for i in 0..line.len() {
+            for j in 0..line.len() {
                 let mut line_copy = Vec::with_capacity(line.len() - 1);
-                line_copy.extend_from_slice(&line[..i]);
-                line_copy.extend_from_slice(&line[i + 1..]);
+                line_copy.extend_from_slice(&line[..j]);
+                line_copy.extend_from_slice(&line[j + 1..]);
 
                 if !self.is_invalid(&line_copy) {
                     total += 1;
