@@ -31,70 +31,111 @@ impl Exercise<Vec<String>> for Day4 {
 
         let mut total = 0;
 
-        for i in 0..lines.len() {
+        let xmas: Vec<u8> = vec![0x4D, 0x41, 0x53]; // MAS
+        let samx: Vec<u8> = vec![0x53, 0x41, 0x4D, 0x58]; // SAMX
+
+        let nb_lines = lines.len();
+
+        for i in 0..nb_lines {
             let line = lines.get(i).unwrap();
             let bytes = line.as_bytes();
+            let len = bytes.len();
 
-            let top_idx = if (i as i32) - 1 < 0 { 0 } else { i - 1 };
-            let bottom_idx = if i + 1 >= bytes.len() { i } else { i + 1 };
+            for j in 0..len {
+                let c = bytes[j];
 
-            let previous_bytes = lines[top_idx].as_bytes();
-            let next_bytes = lines[bottom_idx].as_bytes();
-
-            for j in 0..bytes.len() {
-                let c = bytes[j] as char;
-
-                if c != 'A' {
+                if c != 0x58 { // X
                     continue;
                 }
 
-                let mut horizontal = String::new();
-                let mut vertical = String::new();
-                let mut left_diag = String::new();
-                let mut right_diag = String::new();
+                // LEFT
+                let x_l1 = if j >= 1 && j - 1 >= 0 { j - 1 } else { 0 };
+                let x_l2 = if j >= 2 && j - 2 >= 0 { j - 2 } else { 0 };
+                let x_l3 = if j >= 3 && j - 3 >= 0 { j - 3 } else { 0 };
 
-                let left_left_idx = if (j as i32) - 2 < 0 { 0 } else { j - 2 };
-                let left_idx = if (j as i32) - 1 < 0 { 0 } else { j - 1 };
-                let right_idx = if j + 1 >= bytes.len() { j } else { j + 1 };
+                // RIGHT
+                let x1 = if j + 1 < len { j + 1 } else { len - 1 };
+                let x2 = if j + 2 < len { j + 2 } else { len - 1 };
+                let x3 = if j + 3 < len { j + 3 } else { len - 1 };
 
-                horizontal.push(bytes[left_left_idx] as char);
-                horizontal.push(bytes[left_idx] as char);
-                horizontal.push(bytes[j] as char);
-                horizontal.push(bytes[right_idx] as char);
+                // TOP
+                let y_t1 = if i >= 1 && i - 1 >= 0 { i - 1 } else { 0 };
+                let y_t2 = if i >= 2 && i - 2 >= 0 { i - 2 } else { 0 };
+                let y_t3 = if i >= 3 && i - 3 >= 0 { i - 3 } else { 0 };
 
-                vertical.push(previous_bytes[j] as char);
-                vertical.push(bytes[j] as char);
-                vertical.push(next_bytes[j] as char);
+                // BOTTOM
+                let y1 = if i + 1 < nb_lines { i + 1 } else { nb_lines - 1 };
+                let y2 = if i + 2 < nb_lines { i + 2 } else { nb_lines - 1 };
+                let y3 = if i + 3 < nb_lines { i + 3 } else { nb_lines - 1 };
 
-                left_diag.push(previous_bytes[left_idx] as char);
-                left_diag.push(bytes[j] as char);
-                left_diag.push(next_bytes[right_idx] as char);
+                // TOP LINES
+                let line_t1 = lines.get(y_t1).unwrap().as_bytes();
+                let line_t2 = lines.get(y_t2).unwrap().as_bytes();
+                let line_t3 = lines.get(y_t3).unwrap().as_bytes();
 
-                right_diag.push(previous_bytes[right_idx] as char);
-                right_diag.push(bytes[j] as char);
-                right_diag.push(next_bytes[left_idx] as char);
+                // BOTTOM LINES
+                let line_b1 = lines.get(y1).unwrap().as_bytes();
+                let line_b2 = lines.get(y2).unwrap().as_bytes();
+                let line_b3 = lines.get(y3).unwrap().as_bytes();
 
-                if horizontal == "XSAM"
-                    || horizontal == "XMAS"
-                    || vertical == "XSAM"
-                    || vertical == "XMAS"
-                    || left_diag == "XSAM"
-                    || left_diag == "XMAS"
-                    || right_diag == "XSAM"
-                    || right_diag == "XMAS"
-                {
+                // right
+                let right = vec![bytes[x1], bytes[x2], bytes[x3]];
+                // left
+                let left = vec![bytes[x_l1], bytes[x_l2], bytes[x_l3]];
+                // bottom
+                let bottom = vec![line_b1[j], line_b2[j], line_b3[j]];
+                // top
+                let top = vec![line_t1[j], line_t2[j], line_t3[j]];
+                // top-left
+                let top_right = vec![line_t1[x_l1], line_t2[x_l2], line_t3[x_l3]];
+                // top-right
+                let top_left = vec![line_t1[x1], line_t2[x2], line_t3[x3]];
+                // bottom-left
+                let bottom_right = vec![line_b1[x_l1], line_b2[x_l2], line_b3[x_l3]];
+                // bottom-right
+                let bottom_left = vec![line_b1[x1], line_b2[x2], line_b3[x3]];
+
+                if right == xmas {
+                    total += 1;
+                }
+
+                if left == xmas {
+                    total += 1;
+                }
+
+                if bottom == xmas {
+                    total += 1;
+                }
+
+                if top == xmas {
+                    total += 1;
+                }
+
+                if top_left == xmas {
+                    total += 1;
+                }
+
+                if top_right == xmas {
+                    total += 1;
+                }
+
+                if bottom_right == xmas {
+                    total += 1;
+                }
+
+                if bottom_left == xmas {
                     total += 1;
                 }
             }
         }
 
-        println!("Question 1 : {:?}", total);
+        println!("Question 1 : {:?}", total); // 2573
     }
 
     fn question_two(&self, base_dir: &PathBuf) {
         let path = Day4::get_input_file_path(base_dir);
         let lines = Day4::read_lines(path.to_str().unwrap());
 
-        println!("Question 1 : {:?}", 0);
+        println!("Question 1 : {:?}", 0); // 1850
     }
 }
